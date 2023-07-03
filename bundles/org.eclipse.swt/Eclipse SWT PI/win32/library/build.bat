@@ -42,7 +42,7 @@ IF "%MSVC_HOME%"=="" CALL :FindVisualStudio      "%ProgramFiles%\Microsoft Visua
 IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles(x86)%\Microsoft Visual Studio\$MSVC_VERSION$\$MSVC_EDITION$"
 @rem Report
 IF NOT EXIST "%MSVC_HOME%" (
-	CALL :ECHO "WARNING: Microsoft Visual Studio was not found (for edition=%MSVC_EDITION% version=%MSVC_VERSION%)"
+	CALL :ECHO "ERROR: Microsoft Visual Studio was not found (for edition=%MSVC_EDITION% version=%MSVC_VERSION%)"
     CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 ) ELSE (
 	CALL :ECHO "MSVC_HOME: %MSVC_HOME%"
@@ -75,7 +75,11 @@ if %ERRORLEVEL% NEQ 0 (
     CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 )
 nmake -f make_win32.mak %1 %2 %3 %4 %5 %6 %7 %8 %9
-IF ERRORLEVEL 1 EXIT 1
+IF ERRORLEVEL 1 (
+	CALL :ECHO "ERROR: check '\eclipse.platform.swt\bundles\org.eclipse.swt\Eclipse SWT PI\win32\library\build.bat'"
+	CALL :ECHO "ERROR: return 1"	
+	EXIT 1
+) 
 GOTO :EOF
 
 @rem Find Visual Studio
@@ -134,7 +138,7 @@ GOTO :EOF
 :TryToUseVisualStudio
 	SET "TESTED_VS_PATH=%~1"
 	IF NOT EXIST "%TESTED_VS_PATH%\VC\Auxiliary\Build\vcvarsall.bat" (
-		CALL :ECHO "-- VisualStudio '%TESTED_VS_PATH%' is bad: 'vcvarsall.bat' not found"
+		CALL :ECHO "ERROR: -- VisualStudio '%TESTED_VS_PATH%' is bad: VisualStudio 'vcvarsall.bat' not found"
 		GOTO :EOF
 	)
 	CALL :ECHO "-- VisualStudio '%TESTED_VS_PATH%' looks good, selecting it"
